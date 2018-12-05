@@ -65,25 +65,32 @@ switch (bdParam) {
                             await cliente.connect();
                         
                             console.log( ` - Empezó inserción:  ${ getHora() } ` );
+                            let tiempoInicio = new Date().getTime();
         
                             for ( let i = 0; i < cantidad; i++ ) {
                                 cliente.query("INSERT INTO prueba (texto1, texto2, texto3, texto4, texto5) VALUES ('texto1', 'texto2', 'texto3', 'texto4', 'texto5');")
                                     .then( resBd => {
                                         procesosTerminados++;
 
-                                        if ( procesosTerminados == cantidad ) return console.log(` - Terminó el ultimo proceso con ${procesosTerminadosMal} fallas:  ${ getHora() }`);
+                                        if ( procesosTerminados == cantidad ) {
+                                            let tiempoFin = new Date().getTime();
+                                            return console.log(` - Terminó el ultimo proceso con ${procesosTerminadosMal} fallas:  ${ getHora() }, ${ tiempoFin - tiempoInicio } ms`);
+                                        }
                                     })
                                     .catch( errBd => {
                                         procesosTerminados++;
                                         procesosTerminadosMal++;
 
-                                        if ( procesosTerminados == cantidad ) return console.log(` - Terminó el ultimo proceso con ${procesosTerminadosMal} fallas:  ${ getHora() }`);
+                                        if ( procesosTerminados == cantidad ) {
+                                            let tiempoFin = new Date().getTime();
+                                            return console.log(` - Terminó el ultimo proceso con ${procesosTerminadosMal} fallas:  ${ getHora() }, ${ tiempoFin - tiempoInicio } ms`);
+                                        }
                                     });
                             }
                                     
                             // await cliente.end();
                         
-                            return ' ==== Proceso de lanzar inserciones asincronas terminado ==== ';
+                            return ` ==== Proceso de lanzar inserciones asincronas terminado ==== `;
                         }
                         
                         insercionPgConcurrente()
@@ -173,6 +180,45 @@ switch (bdParam) {
 
                         break;
                     case 'concurrente':
+
+                        let insercionMysqlConcurrente = async () => {
+                            let procesosTerminados = 0;
+                            let procesosTerminadosMal = 0;
+
+                            conMysql.connect();
+                        
+                            console.log( ` - Empezó inserción:  ${ getHora() } ` );
+                            let tiempoInicio = new Date().getTime();
+        
+                            for ( let i = 0; i < cantidad; i++ ) {
+                                query("INSERT INTO prueba (texto1, texto2, texto3, texto4, texto5) VALUES ('texto1', 'texto2', 'texto3', 'texto4', 'texto5');")
+                                    .then( resBd => {
+                                        procesosTerminados++;
+
+                                        if ( procesosTerminados == cantidad ) {
+                                            let tiempoFin = new Date().getTime();
+                                            return console.log(` - Terminó el ultimo proceso con ${procesosTerminadosMal} fallas:  ${ getHora() }, ${ tiempoFin - tiempoInicio } ms`);
+                                        } 
+                                    })
+                                    .catch( errBd => {
+                                        procesosTerminados++;
+                                        procesosTerminadosMal++;
+
+                                        if ( procesosTerminados == cantidad ) {
+                                            let tiempoFin = new Date().getTime();
+                                            return console.log(` - Terminó el ultimo proceso con ${procesosTerminadosMal} fallas:  ${ getHora() }, ${ tiempoFin - tiempoInicio } ms`);
+                                        }
+                                    });
+                            }
+                                    
+                            // await cliente.end();
+                        
+                            return ` ==== Proceso de lanzar inserciones asincronas terminado ====  `;
+                        }
+                        
+                        insercionMysqlConcurrente()
+                            .then( res => console.log(res) )
+                            .catch( err => console.log(` >>>>>>> Error ${err}`) );
 
                         break;
                     default:
